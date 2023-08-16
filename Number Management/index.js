@@ -4,7 +4,7 @@ import axios from "axios";
 
 const app = express();
 dotenv.config();
-const PORT = process.env.SERVER_PORT;
+const PORT = process.env.server_port;
 
 app.use(express.json());
 
@@ -19,13 +19,14 @@ app.get("/numbers", async (req, res) => {
   if (!urls) {
     return res.status(400).json({ error: "There is no URLs" });
   }
-
+  // Here, We need to take care of the urls must be in array
   const urlsArray = Array.isArray(urls) ? urls : [urls];
-  console.log(urlsArray);
+  // console.log(urlsArray);
 
+  // We are creating an array of promises
   const urlsData = urlsArray.map(async (url) => {
     try {
-      const response = await axios.get(url, { timeout: 500 });
+      const response = await axios.get(url);
       const numbers = response.data.numbers;
       //   console.log(numbers)
       return numbers;
@@ -35,6 +36,7 @@ app.get("/numbers", async (req, res) => {
     }
   });
 
+  // Here, We merge all the number and store in the set to get unique number. After that we have sort them
   try {
     const results = await Promise.all(urlsData);
     const mergedNumbers = results.reduce(
